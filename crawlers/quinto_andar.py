@@ -1,11 +1,13 @@
 import requests
 import argparse
 import json
+import smtplib
+from email.message import EmailMessage
 from datetime import datetime
 from unidecode import unidecode
 
 from utils import parse_city, IncorrectArgsException
-from crawler_settings import QUINTO_ANDAR_REGION_SETTINGS, QUINTO_ANDAR_URL
+from crawler_settings import QUINTO_ANDAR_REGION_SETTINGS, QUINTO_ANDAR_URL, EMAIL_ORIGIN, EMAIL_DESTINATION, PASSWORD
 
 # User input variables
 parser = argparse.ArgumentParser(description='Crawler for Quinto Andar website (www.quintoandar.com.br)')
@@ -29,7 +31,7 @@ parsed_city = parse_city(args.city)
 upper_case_state = args.state.upper()
 lower_case_state = args.state.lower()
 
-# Get the boudaries params for the desired city
+# Get the boudaries params for the desired city (must be previously mapped and added to the settings file)
 city_params = QUINTO_ANDAR_REGION_SETTINGS.get(parsed_city)
 
 # Request headers
@@ -83,10 +85,6 @@ if 'hits' in response_content:
 else:
     raise Exception('There was an error in your request, check the arguments passed')
 
-regions = []
-for estate in available_estates:
-    regions.append(unidecode(estate['fields']['regiao_nome'].lower()))
-
 # Applying filters
 if args.bedrooms:
     filtered_estates = [estate for estate in filtered_estates if int(estate['fields']['quartos']) in args.bedrooms]
@@ -111,3 +109,28 @@ for estate in filtered_estates:
     links.append(estate_link)
 
 # Sends e-mail with the links
+email_content = 'Resultados da pesquisa\n'
+
+for link in links:
+    email_content += link + '\n'
+
+msg = EmailMessage()
+msg.set_content(email_content)
+msg['Subject'] = 'Apartamentos à venda'
+msg['From'] = EMAIL_ORIGIN
+msg['To'] = EMAIL_DESTINATION
+
+# create server
+server = smtplib.SMTP('smtp.gmail.com: 587')
+
+server.starttls()
+
+# Login Credentials for sending the mail
+server.login(msg['From'], PASSWORD)
+
+# send the message via the server.
+server.sendmail(msg['From'], msg['To'], msg.as_string())
+
+server.quit()
+
+print('Mensagem enviada com sucesso')

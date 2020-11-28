@@ -1,3 +1,7 @@
+EMAIL_ORIGIN = 'your_email_here@email.com'
+PASSWORD = 'your_email_account_password'
+EMAIL_DESTINATION = 'destination_email_here@email.com'
+
 QUINTO_ANDAR_URL = 'https://www.quintoandar.com.br/api/yellow-pages/search'
 
 QUINTO_ANDAR_REGION_SETTINGS = {
