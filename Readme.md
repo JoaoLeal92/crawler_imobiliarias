@@ -11,9 +11,9 @@ conda activate crawler_imobiliarias
 
 ## Set operation parameters
 In the crawlers/crawler_settings.py file, set the following parameters:
-    EMAIL_ORIGIN = email from which the message will be sent
-    PASSWORD = password to access e-mail account
-    EMAIL_DESTINATION = destination to which the message will be sent
+- EMAIL_ORIGIN = email from which the message will be sent
+- PASSWORD = password to access e-mail account
+- EMAIL_DESTINATION = destination to which the message will be sent
    
 ## Get help for crawler operation parameters
 python path/to/quinto_andar.py --help
